@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <style>
+        form {
+            padding: 5%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="text-center">List of Services:</h1>
+    <ul id='mainList'>
+    </ul>
+    <form id="Form">
+        <div class="form-group">
+            <label for="methodName">Method Name:</label>
+            <input type="text" id='methodName' class="form-control" id="name" placeholder="Enter method name">
+        </div>
+        <div class="form-group">
+            <label for="service"></label>
+            <input type="text" id='service' class="form-control" id="name" placeholder="Servicess">
+        </div>
+        <button type="submit" id="btnInsert" class="btn btn-primary" value="Insert">Create Services</button>
+        <button type="submit" id="btnInsert2" class="btn btn-primary" value="Insert">Check Service status</button>
+    </form>
+    <script>
+        $(function () {
+            function getAllservices() {
+                $.ajax('http://localhost:4000/getservices', {
+                    method: 'GET'
+                }).then(function (data) {
+                    console.log(data);
+                    $('#mainList').empty();
+                    data.forEach(function (service) {
+                        $('#mainList').append('<li>' + 'Method:' + service.method +
+                            ' and ' +
+                            service.service + ' ' + '</li>');
+                    });
+                });
+            }
+            getAllservices();
+
+            $('#btnInsert').click(function (event) {
+                console.log("insert click")
+                var initialServices = {
+                    method: $('#methodName').val(),
+                    service: $('#service').val()
+                }
+
+                $.ajax('http://localhost:4000/setServices', {
+                    type: 'POST',
+                    data: JSON.stringify(initialServices),
+                    contentType: "application/json;charset=utf-8",
+                }).then(function (data) {
+                    console.log(data);
+                    getAllservices();
+                });
+                event.preventDefault();
+            });
+
+            $('#btnInsert2').click(function (event) {
+                console.log("insert click2")
+                var queryServices = {
+                    method: $('#methodName').val(),
+                    service: $('#service').val()
+                }
+
+                $.ajax('http://localhost:4000/checkServiceStatus', {
+                    type: 'POST',
+                    data: JSON.stringify(queryServices),
+                    contentType: "application/json;charset=utf-8",
+                }).then(function (data) {
+                    console.log(data);
+
+                });
+                event.preventDefault();
+            });
+        })
+    </script>
+</body>
+
+</html>
